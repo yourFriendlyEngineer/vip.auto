@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VIP.AUTO | Профессиональный автоподбор</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#030303',       
+                        card: '#0A0A0A',   
+                        border: '#222222',    
+                        primary: '#FFFFFF',   
+                        accent: '#3B82F6',    
+                        textMain: '#F5F5F5',
+                        textMuted: '#888888',
+                        danger: '#EF4444',
+                        success: '#10B981',
+                        yandex: '#FFCC00',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Manrope', 'sans-serif'],
+                    },
+                    animation: {
+                        'marquee': 'marquee 40s linear infinite', 
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'blob': 'blob 10s infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' }, 
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        'shimmer-glass': {
+                            '0%': { left: '-150%', opacity: '0' },
+                            '10%': { opacity: '0.7' },
+                            '50%': { left: '150%', opacity: '0.7' },
+                            '51%': { opacity: '0' },
+                            '100%': { left: '150%', opacity: '0' }
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 40px -10px rgba(255, 255, 255, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030303;
+            color: #F5F5F5;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+            cursor: text; 
+            caret-color: white; 
+        }
+
+        .architect-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 80px 80px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            z-index: -10;
+            pointer-events: none;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+        }
+
+        .glow-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -5;
+            pointer-events: none;
+            animation: blob 15s infinite alternate;
+        }
+        
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .spotlight-card {
+            position: relative;
+            overflow: hidden;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        .spotlight-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+        }
+        .spotlight-card::before {
+            content: '';
+            position: absolute;
+            background: radial-gradient(
+                800px circle at var(--mouse-x) var(--mouse-y),
+                rgba(255, 255, 255, 0.04),
+                transparent 40%
+            );
+            z-index: 1;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+        .spotlight-card:hover::before { opacity: 1; }
+
+        .custom-input {
+            transition: all 0.3s ease;
+            background: rgba(20, 20, 20, 0.5);
+        }
+        .custom-input:focus {
+            background-color: rgba(30, 30, 30, 0.8);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        .custom-input.error {
+            border-color: #EF4444;
+            box-shadow: 0 0 0 1px #EF4444;
+        }
+
+        .hero-mask {
+            mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+        }
+
+        .toggle-btn {
+            transition: all 0.3s ease;
+        }
+        .toggle-btn.active {
+            background-color: white;
+            color: black;
+            font-weight: bold;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-glass-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-glass-shimmer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(255, 255, 255, 0.6) 50%,
+                transparent 100%
+            );
+            transform: skewX(-25deg);
+            animation: shimmer-glass 4s infinite linear;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero-image-position {
+                object-position: 50% 85% !important; 
+            }
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-white selection:text-black pb-24 md:pb-0">
+
+    <div class="architect-grid"></div>
+    
+    <div id="success-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-[#0F0F0F] border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300 relative overflow-hidden" id="modal-content">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-20 bg-success/20 blur-3xl rounded-full pointer-events-none"></div>
+            <div class="relative z-10 w-16 h-16 bg-gradient-to-br from-success/20 to-transparent rounded-full flex items-center justify-center mx-auto mb-6 border border-success/20">
+                <span class="material-symbols-outlined text-success text-3xl">check</span>
+            </div>
+            <h3 id="success-title" class="relative z-10 text-xl font-bold text-white mb-2">Заявка принята</h3>
+            <p id="success-desc" class="relative z-10 text-textMuted text-xs font-medium mb-6">Ваши данные переданы старшему эксперту.</p>
+            <button onclick="closeModal('success-modal')" class="relative z-10 w-full bg-white text-black font-bold py-3 rounded text-xs uppercase tracking-widest hover:bg-gray-200 transition-colors">
+                Отлично
+            </button>
+        </div>
+    </div>
+
+    <div id="report-modal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-[#0F0F0F] border border-white/10 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl transform scale-95 transition-transform duration-300 relative overflow-hidden" id="report-modal-content">
+            <button onclick="closeModal('report-modal')" class="absolute top-4 right-4 text-textMuted hover:text-white transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-20 bg-accent/20 blur-3xl rounded-full pointer-events-none"></div>
+            
+            <div class="relative z-10 w-16 h-16 bg-gradient-to-br from-accent/20 to-transparent rounded-full flex items-center justify-center mx-auto mb-6 border border-accent/20 shadow-[0_0_15px_rgba(59,130,246,0.2)]">
+                <span class="material-symbols-outlined text-accent text-3xl">description</span>
+            </div>
+            
+            <h3 class="relative z-10 text-xl font-bold text-white mb-2">Пример Отчета</h3>
+            <p class="relative z-10 text-textMuted text-xs font-medium mb-6">
+                Полный отчет на 15 страниц: эндоскопия, компьютерная диагностика, юридическая проверка.
+            </p>
+            
+            <div class="relative z-10 bg-white/5 p-1 rounded-lg flex mb-6 border border-white/5">
+                <button onclick="toggleReportMethod('whatsapp')" id="btn-whatsapp" class="toggle-btn active flex-1 py-2 rounded text-[10px] uppercase tracking-widest text-textMuted hover:text-white">
+                    WhatsApp
+                </button>
+                <button onclick="toggleReportMethod('email')" id="btn-email" class="toggle-btn flex-1 py-2 rounded text-[10px] uppercase tracking-widest text-textMuted hover:text-white">
+                    Email
+                </button>
+            </div>
+            
+            <form onsubmit="submitReportForm(event)" class="space-y-4 relative z-10">
+                <input id="report-input" type="tel" placeholder="+7 (___) ___-__-__" required class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[10px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider text-center">
+                
+                <button type="submit" class="w-full bg-accent text-white font-bold py-3 rounded text-xs uppercase tracking-widest hover:bg-accent/80 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)]">
+                    Отправить файл
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="fixed w-full z-50 border-b border-white/5 bg-void/80 backdrop-blur-lg transition-all duration-300 hidden md:block" id="navbar">
+        <div class="container mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-white flex items-center justify-center rounded-sm shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+                    <span class="text-black font-extrabold text-sm">V</span>
+                </div>
+                <div class="font-display font-bold text-white tracking-widest text-sm">VIP.AUTO</div>
+            </div>
+            
+            <div class="flex gap-10 text-[11px] font-bold uppercase tracking-widest text-textMuted">
+                <a href="#audit" class="hover:text-white transition-colors duration-300">Риски</a>
+                <a href="#tech" class="hover:text-white transition-colors duration-300">Диагностика</a>
+                <a href="#economics" class="hover:text-white transition-colors duration-300">Выгода</a>
+            </div>
+
+            <a href="#contact" class="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase bg-white text-black px-6 py-3 rounded hover:bg-gray-200 transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                Оставить заявку
+            </a>
+        </div>
+    </nav>
+
+    <nav class="md:hidden fixed bottom-6 left-4 right-4 z-50 bg-[#111111]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex justify-between items-center px-6 py-4">
+        <a href="#" class="flex flex-col items-center gap-1 text-white">
+            <span class="material-symbols-outlined text-xl">home</span>
+        </a>
+        <a href="#audit" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-xl">shield</span>
+        </a>
+        <a href="#contact" class="flex items-center justify-center w-12 h-12 bg-white rounded-full -mt-8 border-4 border-void shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+            <span class="material-symbols-outlined text-black">search</span>
+        </a>
+        <a href="#tech" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-xl">build</span>
+        </a>
+        <a href="#economics" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-xl">trending_up</span>
+        </a>
+    </nav>
+
+    <div class="md:hidden fixed top-0 w-full z-40 bg-void/80 backdrop-blur-md border-b border-white/5 py-4 px-6 flex justify-center">
+        <div class="flex items-center gap-2">
+            <div class="w-6 h-6 bg-white flex items-center justify-center rounded-sm">
+                <span class="text-black font-extrabold text-xs">V</span>
+            </div>
+            <div class="font-display font-bold text-white tracking-widest text-xs">VIP.AUTO</div>
+        </div>
+    </div>
+
+    <section class="relative h-[100svh] min-h-[600px] flex flex-col items-center pb-0 overflow-hidden bg-void">
+        <div class="absolute bottom-0 w-full h-[55vh] md:h-full z-0 no-select">
+            <div class="relative w-full h-full">
+                <img src="https://raw.githubusercontent.com/yourFriendlyEngineer/vip.auto/refs/heads/main/thrio.jpg" 
+                     alt="Porsche BMW Mercedes Trinity" 
+                     class="w-full h-full object-cover object-bottom md:object-center opacity-90 scale-100 md:scale-105 animate-[pulse_8s_ease-in-out_infinite]"
+                     style="mask-image: linear-gradient(to top, black 60%, transparent 100%); -webkit-mask-image: linear-gradient(to top, black 60%, transparent 100%);">
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-void via-transparent to-void md:via-void/20"></div>
+                <div class="absolute top-0 w-full h-32 bg-gradient-to-b from-void to-transparent md:hidden"></div>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 flex flex-col items-center justify-center flex-grow pt-20 h-full">
+            <div class="max-w-5xl mx-auto fade-up flex flex-col items-center">
+                
+                <h1 class="font-display text-5xl md:text-7xl lg:text-8xl font-bold text-white leading-[0.95] mb-6 md:mb-8 drop-shadow-2xl uppercase tracking-tight text-center no-select">
+                    Абсолютный <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500">Стандарт.</span>
+                </h1>
+                
+                <p class="text-base md:text-xl text-gray-300 max-w-xl mx-auto leading-relaxed mb-10 md:mb-12 font-medium border-t border-white/10 pt-6 md:pt-8 opacity-90 text-center no-select bg-void/30 backdrop-blur-sm rounded-xl p-4 md:bg-transparent md:backdrop-blur-none md:p-0">
+                    Porsche. BMW. Mercedes. <br>
+                    Мы находим безупречные автомобили с кристальной историей. Отсеиваем 98% рынка.
+                </p>
+
+                <div class="flex flex-col items-center gap-12 md:gap-20 w-full">
+                    <a href="#contact" class="group relative bg-white text-black px-12 py-4 rounded font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-all hover:scale-105 duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                        Начать поиск
+                    </a>
+
+                    <div class="flex flex-col items-center gap-2 opacity-40 animate-bounce pointer-events-none mb-6">
+                        <span class="text-[9px] uppercase tracking-widest text-textMuted">Scroll</span>
+                        <span class="material-symbols-outlined text-white text-sm">keyboard_arrow_down</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="w-full bg-white/5 border-y border-white/5 py-3 md:py-4 overflow-hidden relative z-20 backdrop-blur-sm">
+        <div class="flex w-max animate-marquee will-change-transform">
+            <div class="flex gap-12 md:gap-20 px-10 items-center text-[10px] md:text-xs font-mono text-textMuted tracking-widest opacity-80">
+                <span>BMW X5 G05 <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>PORSCHE CAYENNE <span class="text-danger">[ОТКАЗ: ДВИГАТЕЛЬ]</span></span>
+                <span>MERCEDES S63 <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>AUDI RSQ8 <span class="text-danger">[ОТКАЗ: ЮР. ЧИСТОТА]</span></span>
+                <span>RANGE ROVER VOGUE <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>BMW M5 CS <span class="text-danger">[ОТКАЗ: КПП]</span></span>
+                <span>G-CLASS W463 <span class="text-success">[ОДОБРЕНО]</span></span>
+            </div>
+            <div class="flex gap-12 md:gap-20 px-10 items-center text-[10px] md:text-xs font-mono text-textMuted tracking-widest opacity-80">
+                <span>BMW X5 G05 <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>PORSCHE CAYENNE <span class="text-danger">[ОТКАЗ: ДВИГАТЕЛЬ]</span></span>
+                <span>MERCEDES S63 <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>AUDI RSQ8 <span class="text-danger">[ОТКАЗ: ЮР. ЧИСТОТА]</span></span>
+                <span>RANGE ROVER VOGUE <span class="text-success">[ОДОБРЕНО]</span></span>
+                <span>BMW M5 CS <span class="text-danger">[ОТКАЗ: КПП]</span></span>
+                <span>G-CLASS W463 <span class="text-success">[ОДОБРЕНО]</span></span>
+            </div>
+        </div>
+    </div>
+
+    <section id="audit" class="relative py-24 md:py-32 border-b border-white/5 bg-void">
+        <div class="glow-blob left-[-200px] top-[20%] opacity-20"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="mb-16 md:mb-20 max-w-3xl fade-up">
+                <h2 class="text-3xl md:text-5xl font-display font-bold text-white mb-6">Скрытые Угрозы</h2>
+                <p class="text-textMuted text-base md:text-lg leading-relaxed">
+                    Вторичный рынок — агрессивная среда. 70% предложений скрывают серьезные дефекты. Мы фильтруем этот шум.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6" id="cards-container">
+                <div class="spotlight-card p-8 md:p-10 rounded-xl fade-up flex flex-col h-full">
+                    <div class="w-12 h-12 bg-white/5 rounded flex items-center justify-center mb-8 border border-white/10 shadow-inner">
+                        <span class="material-symbols-outlined text-white">warning</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Маскировка Тотала</h3>
+                    <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
+                        Идеальный с виду автомобиль часто оказывается восстановленным после ДТП. Дешевая химия и полировка скрывают суть.
+                    </p>
+                    <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
+                        РИСК: СКРЫТЫЕ ПОВРЕЖДЕНИЯ
+                    </div>
+                </div>
+
+                <div class="spotlight-card p-8 md:p-10 rounded-xl fade-up flex flex-col h-full transition-delay-100">
+                    <div class="w-12 h-12 bg-white/5 rounded flex items-center justify-center mb-8 border border-white/10 shadow-inner">
+                        <span class="material-symbols-outlined text-white">gavel</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Юридическая чистота</h3>
+                    <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
+                        Мы проверяем собственника по закрытым базам. Автотека не спасет от банкротства продавца и изъятия авто.
+                    </p>
+                    <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
+                        РИСК: ПОТЕРЯ ДЕНЕГ
+                    </div>
+                </div>
+
+                <div class="spotlight-card p-8 md:p-10 rounded-xl fade-up flex flex-col h-full transition-delay-200">
+                    <div class="w-12 h-12 bg-white/5 rounded flex items-center justify-center mb-8 border border-white/10 shadow-inner">
+                        <span class="material-symbols-outlined text-white">build</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-4">Технический ресурс</h3>
+                    <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
+                        Продавец сбрасывает ошибки. Мы читаем "теневую память", историю перегревов и реальный пробег в блоках.
+                    </p>
+                    <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
+                        РИСК: РЕМОНТ ДВС
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="tech" class="relative py-24 md:py-32 bg-card border-y border-white/5 overflow-hidden">
+        <div class="absolute top-10 right-0 text-[80px] md:text-[120px] font-display font-bold text-white/[0.02] pointer-events-none select-none">HARDWARE</div>
+        
+        <div class="glow-blob right-[-100px] bottom-0 opacity-10 bg-purple-500/20"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-20 items-center">
+                <div class="fade-up">
+                    <h2 class="text-3xl md:text-5xl font-display font-bold text-white mb-8">Инструментальный<br>Контроль</h2>
+                    <p class="text-textMuted mb-10 text-base md:text-lg">
+                        Никаких "осмотров на глаз". Мы используем сертифицированное дилерское оборудование.
+                    </p>
+
+                    <div class="space-y-8">
+                        <div class="flex gap-5 group"> 
+                            <div class="mt-1 min-w-[40px] w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-void group-hover:border-white/30 transition-colors shadow-glow">
+                                <span class="material-symbols-outlined text-textMuted group-hover:text-white text-sm transition-colors">layers</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg">Etari ET-700 Max</h4>
+                                <p class="text-sm text-textMuted mt-2 leading-relaxed">
+                                    Профессиональный толщиномер. Видит металлизированную шпатлевку, цинкование и швы.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-5 group">
+                            <div class="mt-1 min-w-[40px] w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-void group-hover:border-white/30 transition-colors shadow-glow">
+                                <span class="material-symbols-outlined text-textMuted group-hover:text-white text-sm transition-colors">memory</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg">Launch X431 PAD VII</h4>
+                                <p class="text-sm text-textMuted mt-2 leading-relaxed">
+                                    Дилерский сканер. Считывает данные из "черных ящиков". Видим реальный пробег и моточасы.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-5 group">
+                            <div class="mt-1 min-w-[40px] w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-void group-hover:border-white/30 transition-colors shadow-glow">
+                                <span class="material-symbols-outlined text-textMuted group-hover:text-white text-sm transition-colors">videocam</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg">Эндоскоп jProbe NT</h4>
+                                <p class="text-sm text-textMuted mt-2 leading-relaxed">
+                                    Осмотр камеры сгорания. Проверка цилиндров на задиры и нагар.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-5 group">
+                            <div class="mt-1 min-w-[40px] w-10 h-10 rounded-full border border-white/10 flex items-center justify-center bg-void group-hover:border-white/30 transition-colors shadow-glow">
+                                <span class="material-symbols-outlined text-textMuted group-hover:text-white text-sm transition-colors">flare</span>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-bold text-lg">Криминалистический УФ-детектор</h4>
+                                <p class="text-sm text-textMuted mt-2 leading-relaxed">
+                                    Сверхмощный луч. Выявляет невидимые глазу перекрасы, ремонт карбона/пластика и утечки.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="relative fade-up delay-100 mt-8 lg:mt-0">
+                    <div class="flex flex-col md:block relative rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-card">
+                        
+                        <img src="https://raw.githubusercontent.com/yourFriendlyEngineer/vip.auto/refs/heads/main/EtariET700.jpg" 
+                             alt="Diagnostics Process" 
+                             class="w-full h-64 sm:h-80 md:h-full object-cover object-center grayscale-0 opacity-100 md:grayscale md:opacity-70 md:group-hover:grayscale-0 md:group-hover:opacity-100 transition-all duration-700 hover:scale-105">
+                        
+                        <div class="hidden md:block absolute inset-0 bg-gradient-to-t from-void via-transparent to-transparent"></div>
+                        
+                        <div class="relative md:absolute bottom-0 left-0 w-full bg-void/80 border-t border-white/10 p-6 md:p-8 backdrop-blur-md">
+                            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                <div class="text-left w-full">
+                                    <div class="text-[9px] text-textMuted uppercase tracking-widest mb-1">Пример работы</div>
+                                    <div class="text-sm md:text-lg font-bold text-white font-display leading-tight">Подробный отчет (15 стр)</div>
+                                </div>
+                                
+                                <button onclick="openModal('report-modal')" class="btn-glass-shimmer group w-full md:w-auto flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-6 py-3 rounded text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                                    <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                    <span>Получить PDF</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="economics" class="py-24 md:py-32 container mx-auto px-6">
+        <div class="text-center mb-16 fade-up">
+            <h2 class="text-3xl md:text-5xl font-display font-bold text-white mb-6">Экономика Сделки</h2>
+            <p class="text-textMuted text-base md:text-lg max-w-2xl mx-auto">
+                Мы не просто просим скидку — мы обосновываем её фактами.
+            </p>
+        </div>
+
+        <div class="max-w-5xl mx-auto border border-white/10 rounded-2xl overflow-hidden bg-card fade-up shadow-glow">
+            <div class="hidden md:grid grid-cols-2 text-[10px] font-bold uppercase tracking-widest text-textMuted border-b border-white/10 bg-white/5">
+                <div class="p-8 border-r border-white/10">Самостоятельный поиск</div>
+                <div class="p-8 text-white bg-white/5 flex items-center justify-between">
+                    <span>С экспертом VIP.AUTO</span>
+                    <span class="material-symbols-outlined text-sm text-white">verified</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 text-sm">
+                <div class="md:hidden p-4 border-b border-white/10 bg-white/5 text-[10px] font-bold uppercase tracking-widest text-textMuted">
+                    Самостоятельный поиск
+                </div>
+
+                <div class="p-6 md:p-8 border-r border-white/10 space-y-6 opacity-60 hover:opacity-100 transition-opacity bg-void/20">
+                    <div class="flex justify-between items-center">
+                        <span class="text-textMuted">Цена продавца</span>
+                        <span class="font-mono text-white">8.500.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-textMuted">Торг</span>
+                        <span class="font-mono text-white">- 50.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t border-white/5">
+                        <span class="text-danger font-medium">Риск (ДВС/КПП)*</span>
+                        <span class="font-mono text-danger">+ 350.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-6 mt-6">
+                        <span class="font-bold text-lg text-white">ИТОГО:</span>
+                        <span class="font-mono font-bold text-lg text-textMuted decoration-line-through decoration-danger">8.800.000 ₽</span>
+                    </div>
+                </div>
+
+                <div class="md:hidden p-4 border-y border-white/10 bg-white/10 text-white text-[10px] font-bold uppercase tracking-widest flex items-center justify-between">
+                    <span>С экспертом VIP.AUTO</span>
+                    <span class="material-symbols-outlined text-sm text-white">verified</span>
+                </div>
+
+                <div class="p-6 md:p-8 space-y-6 bg-white/[0.03] relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-success/10 blur-3xl rounded-full"></div>
+                    <div class="flex justify-between items-center relative z-10">
+                        <span class="text-textMuted">Цена продавца</span>
+                        <span class="font-mono text-white">8.500.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center relative z-10">
+                        <span class="text-white font-medium">Аргументированный торг</span>
+                        <span class="font-mono text-success font-bold">- 350.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t border-white/5 relative z-10">
+                        <span class="text-textMuted">Стоимость услуг</span>
+                        <span class="font-mono text-white">+ 60.000 ₽</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-6 mt-6 relative z-10">
+                        <span class="font-bold text-lg text-white">ИТОГО:</span>
+                        <span class="font-mono font-bold text-2xl text-success">8.210.000 ₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="text-center text-[10px] text-textMuted mt-8 opacity-50 max-w-xl mx-auto leading-relaxed">
+            * Средняя стоимость ремонта узлов при покупке непроверенного авто без инструментальной диагностики.
+        </p>
+    </section>
+
+    <section id="contact" class="relative py-24 md:py-32 border-t border-white/5 bg-gradient-to-b from-void to-[#080808]">
+        <div class="glow-blob left-1/2 -translate-x-1/2 top-0 opacity-10 width-[600px] height-[600px]"></div>
+
+        <div class="container mx-auto px-6 max-w-2xl relative z-10">
+            
+            <div class="flex flex-col items-center mb-12 fade-up">
+                <a href="javascript:void(0)" class="mb-8 group flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 px-5 py-2 rounded-full transition-all duration-300 backdrop-blur-sm cursor-default">
+                    <div class="w-6 h-6 bg-yandex text-black flex items-center justify-center rounded font-bold text-xs shadow-lg">Я</div>
+                    <div class="text-xs font-medium text-textMuted group-hover:text-white transition-colors">
+                        Рейтинг Яндекс <span class="text-white font-bold ml-1">4.9</span>
+                    </div>
+                    <div class="flex text-yandex text-xs gap-0.5">
+                        <span class="material-symbols-outlined text-[16px]">star</span>
+                        <span class="material-symbols-outlined text-[16px]">star</span>
+                        <span class="material-symbols-outlined text-[16px]">star</span>
+                        <span class="material-symbols-outlined text-[16px]">star</span>
+                        <span class="material-symbols-outlined text-[16px]">star</span>
+                    </div>
+                </a>
+
+                <h2 class="text-3xl font-display font-bold text-white mb-6">Начать поиск</h2>
+                <p class="text-textMuted text-base md:text-lg text-center">
+                    Заполните форму. Мы свяжемся с вами в ближайшее время.
+                </p>
+            </div>
+
+            <form class="space-y-6 fade-up delay-100 bg-[#0A0A0A] p-8 md:p-10 rounded-2xl border border-white/10 shadow-2xl relative backdrop-blur-sm" id="contactForm" onsubmit="submitForm(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="group">
+                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Марка / Модель</label>
+                        <input type="text" placeholder="BMW X5..." class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                    </div>
+                    <div class="group">
+                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Бюджет</label>
+                        <input type="text" placeholder="10 - 15 МЛН" class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Телефон</label>
+                    <input id="phoneInput" type="tel" placeholder="+7 (___) ___-__-__" required class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                </div>
+
+                <div class="group">
+                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Комментарий (Необязательно)</label>
+                    <textarea rows="3" placeholder="ПОЖЕЛАНИЯ..." class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none resize-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider"></textarea>
+                </div>
+
+                <div class="relative">
+                     <button type="submit" id="submitBtn" class="w-full bg-white text-black font-bold py-5 rounded text-xs uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 active:scale-[0.99] shadow-[0_0_25px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2 mt-4">
+                        <span>Связаться с экспертом</span>
+                    </button>
+                    <p id="error-msg" class="absolute -bottom-8 left-0 w-full text-center text-danger text-[10px] uppercase tracking-widest opacity-0 transition-opacity">Введите корректный номер</p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <footer class="py-10 border-t border-white/5 text-xs text-textMuted bg-void pb-24 md:pb-10">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex flex-col gap-1 text-center md:text-left">
+                <span class="font-bold text-white tracking-widest">VIP.AUTO © 2025</span>
+                <span>Москва-Сити, Пресненская наб., 12</span>
+            </div>
+            <div class="flex gap-8 font-medium">
+                <a href="javascript:void(0)" class="hover:text-white transition-colors cursor-default">Telegram</a>
+                <a href="javascript:void(0)" class="hover:text-white transition-colors cursor-default">WhatsApp</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+        const cardsContainer = document.getElementById('cards-container');
+        const cards = document.querySelectorAll('.spotlight-card');
+        if(cardsContainer) {
+            cardsContainer.onmousemove = e => {
+                for(const card of cards) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty("--mouse-x", `${x}px`);
+                    card.style.setProperty("--mouse-y", `${y}px`);
+                }
+            }
+        }
+
+        const phoneInput = document.getElementById('phoneInput');
+        
+        phoneInput.addEventListener('input', function (e) {
+            this.classList.remove('error');
+            document.getElementById('error-msg').classList.add('opacity-0');
+            
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+            
+            if (!x[2] && x[1] !== '') {
+                e.target.value = '+7 (' + x[1];
+            } else {
+                e.target.value = !x[2] ? '+7 (' : '+7 (' + x[2] + (x[3] ? ') ' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+            }
+        });
+        
+        phoneInput.addEventListener('focus', function(e) {
+            if (e.target.value === '') {
+                e.target.value = '+7 (';
+            }
+        });
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div[id$="content"]').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('opacity-0');
+            modal.querySelector('div[id$="content"]').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        let currentReportMethod = 'whatsapp';
+
+        function toggleReportMethod(method) {
+            currentReportMethod = method;
+            const input = document.getElementById('report-input');
+            const btnWhatsapp = document.getElementById('btn-whatsapp');
+            const btnEmail = document.getElementById('btn-email');
+
+            // Reset error state on toggle
+            input.classList.remove('error');
+
+            if (method === 'whatsapp') {
+                btnWhatsapp.classList.add('active');
+                btnEmail.classList.remove('active');
+                input.type = 'tel';
+                input.placeholder = '+7 (___) ___-__-__';
+                input.value = '';
+                input.oninput = function (e) {
+                    // Remove error state on input
+                    this.classList.remove('error');
+                    
+                    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,1})(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/);
+                    if (!x[2] && x[1] !== '') {
+                        e.target.value = '+7 (' + x[1];
+                    } else {
+                        e.target.value = !x[2] ? '+7 (' : '+7 (' + x[2] + (x[3] ? ') ' + x[3] : '') + (x[4] ? '-' + x[4] : '') + (x[5] ? '-' + x[5] : '');
+                    }
+                }
+            } else {
+                btnEmail.classList.add('active');
+                btnWhatsapp.classList.remove('active');
+                input.type = 'email';
+                input.placeholder = 'IVAN@MAIL.RU';
+                input.value = '';
+                input.oninput = function() {
+                    this.classList.remove('error'); // Just remove error on input for email
+                };
+            }
+        }
+
+        toggleReportMethod('whatsapp');
+
+        function submitReportForm(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('button');
+            const input = document.getElementById('report-input');
+            const originalText = btn.innerHTML;
+
+            // Validation Logic
+            let isValid = true;
+            
+            if (currentReportMethod === 'whatsapp') {
+                if (input.value.length < 18) isValid = false;
+            } else {
+                if (!input.value.includes('@') || !input.value.includes('.')) isValid = false;
+            }
+
+            if (!isValid) {
+                input.classList.add('error');
+                // Optional: Shake animation on the form
+                event.target.classList.add('animate-shake');
+                setTimeout(() => event.target.classList.remove('animate-shake'), 500);
+                return;
+            }
+
+            btn.innerHTML = 'Отправка...';
+            btn.classList.add('opacity-80');
+            
+            setTimeout(() => {
+                closeModal('report-modal');
+                document.getElementById('success-title').innerText = 'Файл отправлен';
+                document.getElementById('success-desc').innerText = 'Проверьте ваш ' + currentReportMethod.toUpperCase() + '. Файл придет в течение минуты.';
+                openModal('success-modal');
+                btn.innerHTML = originalText;
+                btn.classList.remove('opacity-80');
+                event.target.reset();
+                toggleReportMethod('whatsapp'); 
+            }, 1000);
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const phoneVal = phoneInput.value;
+            const errorMsg = document.getElementById('error-msg');
+            const form = document.getElementById('contactForm');
+
+            if (phoneVal.length < 18) {
+                phoneInput.classList.add('error');
+                errorMsg.classList.remove('opacity-0');
+                form.classList.add('animate-shake');
+                setTimeout(() => form.classList.remove('animate-shake'), 500);
+                return;
+            }
+
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">progress_activity</span> Отправка...';
+            btn.classList.add('opacity-80', 'cursor-wait');
+            
+            setTimeout(() => {
+                document.getElementById('success-title').innerText = 'Заявка принята';
+                document.getElementById('success-desc').innerText = 'Ваши данные переданы старшему эксперту.';
+                openModal('success-modal');
+                btn.innerHTML = originalText;
+                btn.classList.remove('opacity-80', 'cursor-wait');
+                form.reset();
+                phoneInput.value = ''; 
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
