@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="ru" class="scroll-smooth">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP.AUTO | Профессиональный автоподбор</title>
     
+    <title>VIP.AUTO | Профессиональный автоподбор премиум класса</title>
+    <meta name="description" content="Подбор автомобилей премиум-класса с гарантией. Porsche, BMW, Mercedes. Полная юридическая и техническая проверка. Эндоскопия, диагностика дилерским сканером.">
+    <meta name="keywords" content="автоподбор, подбор авто, диагностика автомобиля, bmw, porsche, mercedes, автоэксперт">
+    
+    <meta property="og:title" content="VIP.AUTO | Абсолютный Стандарт Подбора">
+    <meta property="og:description" content="Мы находим безупречные автомобили с кристальной историей. Отсеиваем 98% рынка.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://raw.githubusercontent.com/yourFriendlyEngineer/vip.auto/refs/heads/main/thrio.jpg">
+    
+    <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="white"/><text x="50" y="68" font-family="Inter, sans-serif" font-weight="600" font-size="65" text-anchor="middle" fill="black">V</text></svg>'>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +37,8 @@
                         danger: '#EF4444',
                         success: '#10B981',
                         yandex: '#FFCC00',
+                        telegram: '#229ED9',
+                        whatsapp: '#25D366',
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
@@ -72,6 +84,11 @@
             -webkit-user-select: none;
             user-select: none;
             cursor: default;
+        }
+
+        /* Standard Smooth Scroll is disabled to use Custom JS Scroll */
+        html {
+            scroll-behavior: auto;
         }
 
         input, textarea {
@@ -175,11 +192,10 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        /* --- FIXED SHIMMER ANIMATION --- */
         @keyframes shimmer-glass {
             0% { left: -150%; }
-            20% { left: 150%; } /* Fast pass */
-            100% { left: 150%; } /* Pause */
+            20% { left: 150%; } 
+            100% { left: 150%; } 
         }
 
         .btn-glass-shimmer {
@@ -193,7 +209,6 @@
             left: -150%;
             width: 100%;
             height: 100%;
-            /* Stronger Gradient for Visibility */
             background: linear-gradient(
                 to right,
                 transparent 0%,
@@ -201,7 +216,7 @@
                 transparent 100%
             );
             transform: skewX(-25deg);
-            animation: shimmer-glass 3s infinite;
+            animation: shimmer-glass 5s infinite;
             pointer-events: none;
         }
 
@@ -276,32 +291,34 @@
             </div>
             
             <div class="flex gap-10 text-[11px] font-bold uppercase tracking-widest text-textMuted">
-                <a href="#audit" class="hover:text-white transition-colors duration-300">Риски</a>
-                <a href="#tech" class="hover:text-white transition-colors duration-300">Диагностика</a>
-                <a href="#economics" class="hover:text-white transition-colors duration-300">Выгода</a>
+                <a href="#audit" onclick="smoothScrollTo('audit', 1000); return false;" class="hover:text-white transition-colors duration-300">Риски</a>
+                <a href="#tech" onclick="smoothScrollTo('tech', 1000); return false;" class="hover:text-white transition-colors duration-300">Диагностика</a>
+                <a href="#economics" onclick="smoothScrollTo('economics', 1000); return false;" class="hover:text-white transition-colors duration-300">Выгода</a>
             </div>
 
-            <a href="#contact" class="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase bg-white text-black px-6 py-3 rounded hover:bg-gray-200 transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            <a href="#contact" onclick="smoothScrollTo('contact', 1200); return false;" class="flex items-center gap-2 text-[10px] font-bold tracking-widest uppercase border border-white/20 text-white bg-transparent px-6 py-3 rounded hover:bg-white hover:text-black transition-all hover:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                 Оставить заявку
             </a>
         </div>
     </nav>
 
-    <nav class="md:hidden fixed bottom-6 left-4 right-4 z-50 bg-[#111111]/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl flex justify-between items-center px-6 py-4">
-        <a href="#" class="flex flex-col items-center gap-1 text-white">
-            <span class="material-symbols-outlined text-xl">home</span>
+    <nav class="md:hidden fixed bottom-6 left-6 right-6 z-50 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.8)] flex justify-between items-center px-6 py-3">
+        <a href="#audit" onclick="smoothScrollTo('audit', 1000); return false;" class="opacity-60 hover:opacity-100 transition-opacity text-white">
+            <span class="material-symbols-outlined text-[22px]">shield</span>
         </a>
-        <a href="#audit" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-xl">shield</span>
+        <a href="#tech" onclick="smoothScrollTo('tech', 1000); return false;" class="opacity-60 hover:opacity-100 transition-opacity text-white">
+            <span class="material-symbols-outlined text-[22px]">build</span>
         </a>
-        <a href="#contact" class="flex items-center justify-center w-12 h-12 bg-white rounded-full -mt-8 border-4 border-void shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-            <span class="material-symbols-outlined text-black">search</span>
+        
+        <a href="#contact" onclick="smoothScrollTo('contact', 1200); return false;" class="flex items-center justify-center w-12 h-12 bg-white rounded-full -mt-10 border-[3px] border-void shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 transition-transform">
+            <span class="material-symbols-outlined text-black font-bold">search</span>
         </a>
-        <a href="#tech" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-xl">build</span>
+
+        <a href="#economics" onclick="smoothScrollTo('economics', 1000); return false;" class="opacity-60 hover:opacity-100 transition-opacity text-white">
+            <span class="material-symbols-outlined text-[22px]">trending_up</span>
         </a>
-        <a href="#economics" class="flex flex-col items-center gap-1 text-textMuted hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-xl">trending_up</span>
+        <a href="#" onclick="smoothScrollTo('contact', 1000); return false;" class="opacity-60 hover:opacity-100 transition-opacity text-white">
+             <span class="material-symbols-outlined text-[22px]">mail</span>
         </a>
     </nav>
 
@@ -341,9 +358,9 @@
                 </p>
 
                 <div class="flex flex-col items-center gap-12 md:gap-20 w-full">
-                    <a href="#contact" class="group relative bg-white text-black px-12 py-4 rounded font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-all hover:scale-105 duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                    <button onclick="smoothScrollTo('contact', 1500)" class="group relative bg-white text-black px-12 py-4 rounded font-bold text-xs uppercase tracking-widest hover:bg-gray-200 transition-all hover:scale-105 duration-300 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
                         Начать поиск
-                    </a>
+                    </button>
 
                     <div class="flex flex-col items-center gap-2 opacity-40 animate-bounce pointer-events-none mb-6">
                         <span class="text-[9px] uppercase tracking-widest text-textMuted">Scroll</span>
@@ -395,7 +412,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-4">Маскировка Тотала</h3>
                     <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
-                        Идеальный с виду автомобиль часто оказывается восстановленным после ДТП. Дешевая химия и полировка скрывают суть.
+                        Идеальный с виду автомобиль часто оказывается восстановленным после ДТП. <strong>Глубокая полировка и детейлинг</strong> скрывают суть.
                     </p>
                     <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
                         РИСК: СКРЫТЫЕ ПОВРЕЖДЕНИЯ
@@ -408,7 +425,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-4">Юридическая чистота</h3>
                     <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
-                        Мы проверяем собственника по закрытым базам. Автотека не спасет от банкротства продавца и изъятия авто.
+                        Мы проверяем собственника по закрытым базам. Автотека не спасет от <strong>банкротства продавца и изъятия авто</strong>.
                     </p>
                     <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
                         РИСК: ПОТЕРЯ ДЕНЕГ
@@ -421,7 +438,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-4">Технический ресурс</h3>
                     <p class="text-textMuted text-sm leading-relaxed mb-8 flex-grow">
-                        Продавец сбрасывает ошибки. Мы читаем "теневую память", историю перегревов и реальный пробег в блоках.
+                        Продавец сбрасывает ошибки. Мы читаем <strong>"теневую память"</strong>, историю перегревов и <strong>реальный пробег</strong> в блоках.
                     </p>
                     <div class="text-[10px] text-danger font-mono border-t border-white/10 pt-4 tracking-widest">
                         РИСК: РЕМОНТ ДВС
@@ -623,52 +640,102 @@
                 </p>
             </div>
 
-            <form class="space-y-6 fade-up delay-100 bg-[#0A0A0A] p-8 md:p-10 rounded-2xl border border-white/10 shadow-2xl relative backdrop-blur-sm" id="contactForm" onsubmit="submitForm(event)">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form class="space-y-4 fade-up delay-100 bg-[#0A0A0A] p-6 md:p-8 rounded-2xl border border-white/10 shadow-2xl relative backdrop-blur-sm" id="contactForm" onsubmit="submitForm(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="group">
-                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Марка / Модель</label>
-                        <input type="text" placeholder="BMW X5..." class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-1.5 tracking-widest">Марка / Модель</label>
+                        <input type="text" placeholder="BMW X5..." class="custom-input w-full border border-white/10 p-3 text-white rounded font-medium outline-none placeholder:text-[10px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
                     </div>
                     <div class="group">
-                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Бюджет</label>
-                        <input type="text" placeholder="10 - 15 МЛН" class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                        <label class="block text-[10px] font-bold text-textMuted uppercase mb-1.5 tracking-widest">Бюджет</label>
+                        <input type="text" placeholder="10 - 15 МЛН" class="custom-input w-full border border-white/10 p-3 text-white rounded font-medium outline-none placeholder:text-[10px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
                     </div>
                 </div>
 
                 <div class="group">
-                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Телефон</label>
-                    <input id="phoneInput" type="tel" placeholder="+7 (___) ___-__-__" required class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
+                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-1.5 tracking-widest">Телефон</label>
+                    <input id="phoneInput" type="tel" placeholder="+7 (___) ___-__-__" required class="custom-input w-full border border-white/10 p-3 text-white rounded font-medium outline-none placeholder:text-[10px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider">
                 </div>
 
                 <div class="group">
-                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-2 tracking-widest">Комментарий (Необязательно)</label>
-                    <textarea rows="3" placeholder="ПОЖЕЛАНИЯ..." class="custom-input w-full border border-white/10 p-4 text-white rounded font-medium outline-none resize-none placeholder:text-[11px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider"></textarea>
+                    <label class="block text-[10px] font-bold text-textMuted uppercase mb-1.5 tracking-widest">Комментарий (Необязательно)</label>
+                    <textarea rows="3" placeholder="ПОЖЕЛАНИЯ" class="custom-input w-full border border-white/10 p-3 text-white rounded font-medium outline-none resize-none placeholder:text-[10px] placeholder:uppercase placeholder:text-textMuted/40 placeholder:tracking-wider"></textarea>
                 </div>
 
-                <div class="relative">
-                     <button type="submit" id="submitBtn" class="w-full bg-white text-black font-bold py-5 rounded text-xs uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 active:scale-[0.99] shadow-[0_0_25px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2 mt-4">
+                <div class="relative mt-2">
+                     <button type="submit" id="submitBtn" class="w-full bg-white text-black font-bold py-4 rounded text-xs uppercase tracking-widest hover:bg-gray-200 transition-all duration-300 active:scale-[0.99] shadow-[0_0_25px_rgba(255,255,255,0.15)] flex justify-center items-center gap-2 mt-2">
                         <span>Связаться с экспертом</span>
                     </button>
-                    <p id="error-msg" class="absolute -bottom-8 left-0 w-full text-center text-danger text-[10px] uppercase tracking-widest opacity-0 transition-opacity">Введите корректный номер</p>
+                    <p id="error-msg" class="absolute -bottom-6 left-0 w-full text-center text-danger text-[9px] uppercase tracking-widest opacity-0 transition-opacity">Введите корректный номер</p>
+                </div>
+
+                <div class="pt-5 mt-5 border-t border-white/10">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="h-px bg-white/10 flex-1"></div>
+                        <span class="text-[9px] font-bold text-textMuted uppercase tracking-widest whitespace-nowrap">или напишите напрямую</span>
+                        <div class="h-px bg-white/10 flex-1"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="javascript:void(0)" class="group relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#25D366]/10 hover:border-[#25D366]/30 transition-all duration-300">
+                            <span class="material-symbols-outlined text-[#25D366] text-xl group-hover:scale-110 transition-transform">chat</span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-textMuted group-hover:text-white transition-colors">WhatsApp</span>
+                        </a>
+                        
+                        <a href="javascript:void(0)" class="group relative flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-[#229ED9]/10 hover:border-[#229ED9]/30 transition-all duration-300">
+                            <span class="material-symbols-outlined text-[#229ED9] text-xl group-hover:scale-110 transition-transform">send</span>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-textMuted group-hover:text-white transition-colors">Telegram</span>
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
     </section>
 
-    <footer class="py-10 border-t border-white/5 text-xs text-textMuted bg-void pb-24 md:pb-10">
+    <footer class="py-6 md:py-10 border-t border-white/5 text-xs text-textMuted bg-void pb-18 md:pb-10">
         <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
             <div class="flex flex-col gap-1 text-center md:text-left">
                 <span class="font-bold text-white tracking-widest">VIP.AUTO © 2025</span>
                 <span>Москва-Сити, Пресненская наб., 12</span>
             </div>
-            <div class="flex gap-8 font-medium">
-                <a href="javascript:void(0)" class="hover:text-white transition-colors cursor-default">Telegram</a>
-                <a href="javascript:void(0)" class="hover:text-white transition-colors cursor-default">WhatsApp</a>
-            </div>
+            
+            <a href="javascript:void(0)" class="hover:text-white transition-colors cursor-default text-[10px] uppercase tracking-widest font-medium opacity-70 hover:opacity-100">
+                Политика конфиденциальности
+            </a>
         </div>
     </footer>
 
     <script>
+        // Custom Smooth Scroll Function
+        function smoothScrollTo(targetId, duration = 1000) {
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            const startPosition = window.pageYOffset;
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset;
+            const distance = targetPosition - startPosition;
+            let startTime = null;
+
+            function animation(currentTime) {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+                const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+                window.scrollTo(0, run);
+
+                if (timeElapsed < duration) requestAnimationFrame(animation);
+            }
+
+            // Quadratic easing in/out
+            function easeInOutQuad(t, b, c, d) {
+                t /= d / 2;
+                if (t < 1) return c / 2 * t * t + b;
+                t--;
+                return -c / 2 * (t * (t - 2) - 1) + b;
+            }
+
+            requestAnimationFrame(animation);
+        }
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
